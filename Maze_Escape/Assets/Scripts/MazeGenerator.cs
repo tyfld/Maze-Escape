@@ -16,6 +16,19 @@ public class MazeGenerator : MonoBehaviour
 
     private MazeCell[,] _mazeGrid;
 
+    [SerializeField]
+    private float _cellSize = 1f;
+
+
+    [SerializeField]
+    private GameObject morbPrefab;
+
+    [SerializeField]
+    private int numberOfSpheres = 6;
+
+    private List<Vector2Int> _freePositions = new List<Vector2Int>();
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,11 +43,12 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        // Choisit une entrée fixe et supprime un mur pour faire l'entrée
+        // Choisit une entree fixe et supprime un mur pour faire l'entree
         MazeCell entryCell = _mazeGrid[2, 0];
         entryCell.ClearBackWall();
 
         GenerateMaze(null, entryCell);
+        PlaceSpheres();
     }
 
     private void GenerateMaze(MazeCell previousCell, MazeCell currentCell)
@@ -144,10 +158,23 @@ public class MazeGenerator : MonoBehaviour
         }
     }
 
-
-    // Update is called once per frame
-    void Update()
+    private void PlaceSpheres() 
     {
-        
+        // Collecte toutes les positions libres
+        for (int x = 0; x < _mazeWidth; x++) 
+        {
+            for (int z = 0; z < _mazeDepth; z++) 
+            {
+                _freePositions.Add(new Vector2Int(x, z));
+            }
+        }
+
+        // Melange les positions et instancie des spheres
+        var positions = _freePositions.OrderBy(p => Random.value).Take(numberOfSpheres);
+        foreach (var pos in positions) 
+        {
+            Vector3 worldPos = new Vector3(pos.x * _cellSize, 0.5f, pos.y * _cellSize);
+            Instantiate(morbPrefab, worldPos, Quaternion.identity);
+        }
     }
 }
