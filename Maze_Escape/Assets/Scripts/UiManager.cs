@@ -17,6 +17,10 @@ public class UiManager : MonoBehaviour
     [SerializeField]
     private GameObject winMenu;
 
+    [SerializeField]
+    private GameObject pauseMenu;
+    private bool isPaused = false;
+
     private void Awake() 
     {
         Instance = this;
@@ -32,6 +36,22 @@ public class UiManager : MonoBehaviour
     {
         UpdateUI();
         winMenu.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+    void Update() 
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                Resume();
+            }
+            else 
+            {
+                Pause();
+            }
+        }
     }
 
     void HandleSphereCollected()
@@ -47,7 +67,7 @@ public class UiManager : MonoBehaviour
 
     void UpdateUI()
     {
-        scoreText.text = $"{collected} / {totalSpheres} morbs colllectées";
+        scoreText.text = $"{collected} / {totalSpheres} morbs collected";
     }
 
     void ShowWinMenu()
@@ -57,6 +77,7 @@ public class UiManager : MonoBehaviour
 
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -64,5 +85,19 @@ public class UiManager : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("Quit Game");
+    }
+
+    public void Resume()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f;
+        isPaused = false;
+    }
+
+    public void Pause()
+    {
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f;
+        isPaused = true;
     }
 }
